@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Ayrıntıları</title>
+</head>
+<body>
+
+<h2>Film Ayrıntıları</h2>
+
+<!-- Film Detayları -->
+<div>
+    <h3 th:text="${film.title}"></h3>
+    <p th:text="'Tür: ' + ${film.genre}"></p>
+    <p th:text="'Yıl: ' + ${film.year}"></p>
+    <p th:text="'Açıklama: ' + ${film.description}"></p>
+    <img th:src="@{'/images/' + ${film.imageUrl}}" alt="Film Resmi" width="200">
+</div>
+
+<!-- Yorumlar -->
+<h4>Yorumlar</h4>
+<div th:each="comment : ${comments}">
+    <p><strong th:text="${comment.username}">Kullanıcı Adı</strong>: <span th:text="${comment.content}">Yorum</span></p>
+</div>
+
+<!-- Yorum Ekleme Formu -->
+<h4>Yorum Yap</h4>
+<form action="#" th:action="@{/films/{id}/comments(id=${film.id})}" method="post">
+    <input type="text" name="username" placeholder="Kullanıcı Adı" required>
+    <textarea name="content" placeholder="Yorumunuzu yazın" required></textarea>
+    <button type="submit">Yorum Ekle</button>
+</form>
+
+<a href="/films">Geri</a>
+
+</body>
+</html>

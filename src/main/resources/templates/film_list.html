@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Listesi</title>
+</head>
+<body>
+
+<h2>Film Arşivi</h2>
+
+<!-- Film Listesi -->
+<table>
+    <thead>
+    <tr>
+        <th>Başlık</th>
+        <th>Tür</th>
+        <th>Yıl</th>
+        <th>Ayrıntılar</th>
+    </tr>
+    </thead>
+    <tbody>
+    <th:block th:each="film : ${films}">
+        <tr>
+            <td th:text="${film.title}"></td>
+            <td th:text="${film.genre}"></td>
+            <td th:text="${film.year}"></td>
+            <td><a th:href="@{/films/{id}(id=${film.id})}">Detay</a></td>
+        </tr>
+    </th:block>
+    </tbody>
+</table>
+<table>
+    <tr th:each="film : ${films}">
+        <td><img th:src="@{/films/{id}/image(id=${film.id})}" width="100" height="150"/></td>
+        <td th:text="${film.title}"></td>
+        <td><a th:href="@{/films/{id}(id=${film.id})}">Detay</a></td>
+    </tr>
+</table>
+
+</body>
+</html>

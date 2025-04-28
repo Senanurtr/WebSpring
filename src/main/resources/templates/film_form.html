@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Film Ekle</title>
+</head>
+<body>
+
+<h2>Film Ekle</h2>
+
+<form action="#" th:action="@{/films}" method="post">
+    <input type="text" name="title" placeholder="Film Başlığı" required><br>
+    <input type="text" name="genre" placeholder="Tür" required><br>
+    <input type="number" name="year" placeholder="Yıl" required><br>
+    <textarea name="description" placeholder="Film Açıklaması" required></textarea><br>
+    <input type="file" name="image" accept="image/*"><br>
+    <button type="submit">Ekle</button>
+</form>
+
+<a href="/films">Geri</a>
+
+</body>
+</html>
