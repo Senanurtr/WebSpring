@@ -72,9 +72,17 @@ public class DataInitializer {
             film3.setDescription("Exploration of time, space, and love.");
             film3.setImage(loadImageAsBytes("interstellar.jpg"));
 
+            Film film4 = new Film();
+            film4.setTitle("Recep İvedik");
+            film4.setGenre("Comedy");
+            film4.setYear(2008);
+            film4.setDescription("Kaba saba ama komik bir karakterin şehir maceraları.");
+            film4.setImage(loadImageAsBytes("reco.jpg"));
+
             filmRepository.save(film1);
             filmRepository.save(film2);
             filmRepository.save(film3);
+            filmRepository.save(film4);
         };
     }
 
