@@ -25,10 +25,20 @@
     </div>
 </div>
 
+
 <!-- Ortalama Puan -->
 <div class="mb-4">
-    <p><strong>Ortalama Puan:</strong> <span th:text="${averageRating}">0</span> / 5</p>
+    <p><strong>Sistem Puanı:</strong>
+        <span th:text="${#numbers.formatDecimal(film.rating, 1, 1)}">7.5</span> / 5
+    </p>
+    <p><strong>Kullanıcı Ortalaması:</strong>
+        <span th:text="${#numbers.formatDecimal(averageRating, 1, 1)}">0.0</span> / 5
+    </p>
+    <p><strong>Oy Sayısı:</strong>
+        <span th:text="${film.voteCount}">100</span>
+    </p>
 </div>
+
 
 <!-- Puan Verme Formu (Giriş yapmış kullanıcı için) -->
 <form th:action="@{/films/{id}/rate(id=${film.id})}" method="post" class="mb-4">
