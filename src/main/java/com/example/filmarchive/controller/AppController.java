@@ -56,15 +56,31 @@ public class AppController {
 
     // ✅ TÜM FİLMLERİ LİSTELE
     @GetMapping("/films")
-    public String listFilms(@RequestParam(value = "genre", required = false) String genre, Model model) {
+    public String listFilms(@RequestParam(value = "genre", required = false) String genre,
+                            @RequestParam(value = "sort", required = false) String sort,
+                            @RequestParam(value = "query", required = false) String query,
+                            Model model) {
+
         List<Film> films;
-        if (genre != null && !genre.isEmpty()) {
+
+        if (query != null && !query.isEmpty()) {
+            films = filmService.findByTitleContaining(query);
+        } else if (genre != null && !genre.isEmpty()) {
             films = filmService.findByGenreContainingIgnoreCase(genre);
         } else {
             films = filmService.findAll();
         }
 
-        // Bütün türleri de çıkaralım sidebar için
+        if (sort != null) {
+            switch (sort) {
+                case "yearAsc" -> films.sort(Comparator.comparing(Film::getYear));
+                case "yearDesc" -> films.sort(Comparator.comparing(Film::getYear).reversed());
+                case "ratingAsc" -> films.sort(Comparator.comparing(Film::getRating));
+                case "ratingDesc" -> films.sort(Comparator.comparing(Film::getRating).reversed());
+            }
+        }
+
+
         List<String> genres = films.stream()
                 .map(Film::getGenre)
                 .distinct()
@@ -72,10 +88,10 @@ public class AppController {
 
         model.addAttribute("films", films);
         model.addAttribute("genres", genres);
-        model.addAttribute("selectedGenre", genre); // 💥 yeni eklendi
-
+        model.addAttribute("selectedGenre", genre);
         return "film_list";
     }
+
     @GetMapping("/search")
     public String searchFilms(@RequestParam("query") String query, Model model) {
         List<Film> foundFilms = filmService.findByTitleContaining(query);
@@ -128,13 +144,30 @@ public class AppController {
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         Optional<Rating> existingRating = ratingService.findByUserAndFilm(user, film);
-
         Rating rating = existingRating.orElseGet(() -> new Rating(user, film, score));
-        rating.setScore(score); // güncelle veya ilk defa ver
 
+        int previousVoteCount = film.getVoteCount();
+        double previousTotal = film.getRating() * previousVoteCount;
+
+        // Eğer kullanıcı önceden puan verdiyse, eski puanı silip güncel puanı ekle
+        if (existingRating.isPresent()) {
+            double updatedTotal = previousTotal - existingRating.get().getScore() + score;
+            double newAverage = updatedTotal / previousVoteCount;
+            film.setRating(newAverage);
+        } else {
+            int newVoteCount = previousVoteCount + 1;
+            double newAverage = (previousTotal + score) / newVoteCount;
+            film.setRating(newAverage);
+            film.setVoteCount(newVoteCount);
+        }
+
+        rating.setScore(score);
+        filmService.save(film);
         ratingService.save(rating);
+
         return "redirect:/films/" + id;
     }
+
 
     // ✅ FİLM EKLEME FORMU
     @GetMapping("/films/add")
