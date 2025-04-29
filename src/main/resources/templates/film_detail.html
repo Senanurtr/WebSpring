@@ -1,46 +1,75 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Film Ayrıntıları</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.min.js" integrity="sha384-VQqxDN0EQCkWoxt/0vsQvZswzTHUVOImccYmSyhJTp7kGtPed0Qcx8rK9h9YEgx+" crossorigin="anonymous"></script>
-</head>
-<body>
-<div th:replace="header :: header"></div>
 
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+</head>
+<body class="container mt-5">
+
+<div th:replace="header :: header"></div>
 
 <h2>Film Ayrıntıları</h2>
 
 <!-- Film Detayları -->
-<div>
-    <h3 th:text="${film.title}"></h3>
-    <p th:text="'Tür: ' + ${film.genre}"></p>
-    <p th:text="'Yıl: ' + ${film.year}"></p>
-    <p th:text="'Açıklama: ' + ${film.description}"></p>
-    <img th:src="@{'/images/' + ${film.imageUrl}}" alt="Film Resmi" width="200">
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="card-title" th:text="${film.title}"></h3>
+        <p class="card-text" th:text="'Tür: ' + ${film.genre}"></p>
+        <p class="card-text" th:text="'Yıl: ' + ${film.year}"></p>
+        <p class="card-text" th:text="'Açıklama: ' + ${film.description}"></p>
+        <img th:src="@{'/films/' + ${film.id} + '/image'}" alt="Film Resmi" class="img-fluid rounded" style="max-width: 200px;">
+    </div>
 </div>
 
-<!-- Yorumlar -->
-<!-- Yorum Yap -->
-<h4>Yorum Yap</h4>
-<form action="#" th:action="@{/films/{id}/comments(id=${film.id})}" method="post">
-    <textarea name="content" placeholder="Yorumunuzu yazın" required></textarea>
-    <button type="submit">Yorum Ekle</button>
+<!-- Ortalama Puan -->
+<div class="mb-4">
+    <p><strong>Ortalama Puan:</strong> <span th:text="${averageRating}">0</span> / 5</p>
+</div>
+
+<!-- Puan Verme Formu (Giriş yapmış kullanıcı için) -->
+<form th:action="@{/films/{id}/rate(id=${film.id})}" method="post" class="mb-4">
+    <div class="mb-3">
+        <label for="score" class="form-label">Puan Ver:</label>
+        <select name="score" id="score" class="form-select" required>
+            <option value="" disabled selected>Seçiniz...</option> <!-- Default seçenek -->
+            <option value="1">1 - Çok Kötü</option>
+            <option value="2">2 - Kötü</option>
+            <option value="3">3 - Orta</option>
+            <option value="4">4 - İyi</option>
+            <option value="5">5 - Çok İyi</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Puan Ver</button>
 </form>
 
+<!-- Yorumlar -->
+<h4>Yorumlar</h4>
+<div class="list-group mb-4">
+    <div th:each="comment : ${comments}" class="list-group-item">
+        <strong th:text="${comment.username}">Kullanıcı Adı</strong>:
+        <span th:text="${comment.content}">Yorum</span>
+    </div>
+</div>
 
 <!-- Yorum Ekleme Formu -->
 <h4>Yorum Yap</h4>
-<form action="#" th:action="@{/films/{id}/comments(id=${film.id})}" method="post">
-    <input type="text" name="username" placeholder="Kullanıcı Adı" required>
-    <textarea name="content" placeholder="Yorumunuzu yazın" required></textarea>
-    <button type="submit">Yorum Ekle</button>
+<form th:action="@{/films/{id}/comments(id=${film.id})}" method="post" class="mb-4">
+    <div class="mb-3">
+        <textarea name="content" placeholder="Yorumunuzu yazın" class="form-control" rows="3" required></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Yorum Ekle</button>
 </form>
 
-<a href="/films">Geri</a>
+<p>
+    <a th:href="@{/films}" class="btn btn-secondary">Geri Dön</a>
+</p>
+
+<!-- Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js" integrity="sha384-5CMCrfFp5oD4uWgF49fRh+SLSv6Tn1w2xIZXCXDdgc/Ef0rZE1VY5S0KWs/oUNs1" crossorigin="anonymous"></script>
 
 </body>
 </html>
