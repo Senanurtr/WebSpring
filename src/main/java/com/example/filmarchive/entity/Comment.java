@@ -14,6 +14,7 @@ public class Comment {
     @ManyToOne
     private Film film;
 
+
     public Long getId() {
         return id;
     }

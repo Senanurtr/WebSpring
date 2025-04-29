@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/css/**", "/images/**").permitAll()
-                        .requestMatchers("/films/add").hasRole("ADMIN")
+                        .requestMatchers("/films/add").hasRole("ADMIN") // Admin erişimi kontrolü
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
@@ -65,10 +65,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .roles(user.getRoles().stream()
-                            .map(role -> role.getName().replace("ROLE_", "")) // "ROLE_ADMIN" → "ADMIN"
-                            .collect(Collectors.toList())
-                            .toArray(new String[0]))
+                    .roles(user.getRole().name()) // Tek ENUM değişkeni olarak alındı
                     .build();
         };
     }

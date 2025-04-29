@@ -1,10 +1,8 @@
 package com.example.filmarchive.config;
 
 import com.example.filmarchive.entity.Film;
-import com.example.filmarchive.entity.Role;
 import com.example.filmarchive.entity.User;
 import com.example.filmarchive.repository.FilmRepository;
-import com.example.filmarchive.repository.RoleRepository;
 import com.example.filmarchive.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -14,45 +12,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 
 @Configuration
 public class DataInitializer {
 
     @Bean
     public CommandLineRunner initData(
-            RoleRepository roleRepository,
             UserRepository userRepository,
             FilmRepository filmRepository,
             PasswordEncoder passwordEncoder
     ) {
         return args -> {
-            // Roller
-            Role adminRole = new Role();
-            adminRole.setName("ROLE_ADMIN");
-            Role userRole = new Role();
-            userRole.setName("ROLE_USER");
-
-            roleRepository.save(adminRole);
-            roleRepository.save(userRole);
-
-            // Admin kullanıcı
+            // ✅ Admin kullanıcı
             User admin = new User();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
-            admin.setRoles(Set.of(adminRole));
+            admin.setRole(User.Role.ADMIN); // Yeni ENUM kullanımı
             userRepository.save(admin);
 
-            // Normal kullanıcı
+            // ✅ Normal kullanıcı
             User user = new User();
             user.setUsername("user");
             user.setPassword(passwordEncoder.encode("user"));
-            user.setRoles(Set.of(userRole));
+            user.setRole(User.Role.USER); // Yeni ENUM kullanımı
             userRepository.save(user);
 
 
 
-            // Filmler
+            // ✅ Filmler
             Film film1 = new Film();
             film1.setTitle("Inception");
             film1.setGenre("Sci-Fi");

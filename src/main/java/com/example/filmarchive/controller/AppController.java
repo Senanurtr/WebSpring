@@ -18,15 +18,14 @@ import java.util.*;
 public class AppController {
 
     private final UserService userService;
-    private final RoleService roleService;
+
     private final FilmService filmService;
     private final CommentService commentService;
     private final RatingService ratingService;
 
-    public AppController(UserService userService, RoleService roleService, FilmService filmService,
+    public AppController(UserService userService, FilmService filmService,
                          CommentService commentService, RatingService ratingService) {
         this.userService = userService;
-        this.roleService = roleService;
         this.filmService = filmService;
         this.commentService = commentService;
         this.ratingService = ratingService;
@@ -74,10 +73,7 @@ public class AppController {
 
     @PostMapping("/register")
     public String registerUser(@ModelAttribute User user) {
-        Role userRole = roleService.findByName("USER");
-        if (userRole != null) {
-            user.setRoles(Collections.singleton(userRole));
-        }
+        user.setRole(User.Role.USER); // 🔥 `Set<Role>` yerine tek ENUM olarak atanıyor
         userService.save(user);
         return "redirect:/login?success";
     }
