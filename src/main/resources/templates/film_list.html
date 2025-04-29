@@ -18,22 +18,20 @@
     <div class="col-md-2">
         <h5>Türler</h5>
         <div class="list-group">
-            <!-- Tüm Filmler -->
+            <!-- ✅ Tüm Filmler Linki -->
             <a th:href="@{/films}"
                class="list-group-item list-group-item-action"
-               th:classappend="${selectedGenre} == null ? 'active' : ''">
+               th:classappend="${selectedGenre == null or selectedGenre == ''} ? 'active' : ''">
                 Tüm Filmler
             </a>
-            <!-- Türlere Göre -->
+
+            <!-- ✅ Türlere Göre Filtreleme -->
             <a th:each="genre : ${genres}"
                th:href="@{/films(genre=${genre})}"
                class="list-group-item list-group-item-action"
-               th:classappend="${selectedGenre == genre} ? 'active' : ''">
+               th:classappend="${selectedGenre != null and selectedGenre == genre} ? 'active' : ''">
                 <span th:text="${genre}"></span>
             </a>
-
-
-
         </div>
     </div>
 

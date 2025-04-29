@@ -33,6 +33,12 @@ public class FilmService {
     public List<Film> findByGenreContainingIgnoreCase(String genre) {
         return filmRepository.findByGenreContainingIgnoreCase(genre);
     }
+    public List<String> findAllGenres() {
+        return filmRepository.findAll().stream()
+                .map(Film::getGenre)
+                .distinct()
+                .toList();
+    }
 
 
     public List<Film> findByTitleContaining(String title) {

@@ -78,12 +78,12 @@ public class AppController {
         return "redirect:/login?success";
     }
 
-    // ✅ TÜM FİLMLERİ LİSTELE
     @GetMapping("/films")
     public String listFilms(@RequestParam(value = "genre", required = false) String genre,
                             @RequestParam(value = "sort", required = false) String sort,
                             @RequestParam(value = "query", required = false) String query,
                             Model model) {
+
         List<Film> films;
 
         if (query != null && !query.isEmpty()) {
@@ -103,13 +103,13 @@ public class AppController {
             }
         }
 
-        List<String> genres = films.stream()
-                .map(Film::getGenre)
-                .distinct()
-                .toList();
+        // 📌 ✅ Türler artık film listesine bağlı değil, her zaman tam listeyi alıyoruz!
+        List<String> genres = filmService.findAllGenres();
+
         model.addAttribute("films", films);
         model.addAttribute("genres", genres);
         model.addAttribute("selectedGenre", genre);
+
         return "film_list";
     }
 
