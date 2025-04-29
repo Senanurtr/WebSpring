@@ -155,4 +155,20 @@ public class AppController {
         headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
+    // 📌 ADMIN: Film Ekleme Formu
+    @GetMapping("/admin/films/add")
+    public String showAdminFilmForm(Model model) {
+        model.addAttribute("film", new Film());
+        return "admin/film_form"; // farklı bir form görünümü
+    }
+
+    // 📌 ADMIN: Film Kaydet
+    @PostMapping("/admin/films")
+    public String addFilmAdmin(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        if (!imageFile.isEmpty()) {
+            film.setImage(imageFile.getBytes());
+        }
+        filmService.save(film);
+        return "redirect:/admin/films/add?success";
+    }
 }
