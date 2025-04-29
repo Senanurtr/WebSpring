@@ -2,6 +2,10 @@ package com.example.filmarchive.entity;
 
 import jakarta.persistence.*;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 @Entity
 @Table(name = "films")
 public class Film {
@@ -80,5 +84,15 @@ public class Film {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public byte[] loadImageAsBytes(String filename) {
+        try {
+            Path imagePath = Path.of("src/main/resources/static/images/" + filename);
+            return Files.readAllBytes(imagePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }
