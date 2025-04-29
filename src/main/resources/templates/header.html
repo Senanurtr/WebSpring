@@ -7,26 +7,23 @@
 </head>
 <body>
 
-<div th:fragment="header">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <a th:href="@{/films}" class="btn btn-outline-primary">Anasayfa</a>
+<div th:fragment="header" class="container mt-3">
+    <div th:if="${#authentication != null and #authentication.name != 'anonymousUser'}">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a th:href="@{/films}" class="btn btn-outline-primary">Anasayfa</a>
 
-        <!-- ✅ Arama Formu -->
-        <form th:action="@{/search}" method="get" class="d-flex gap-2">
-            <input type="text" name="query" class="form-control" placeholder="Film ara..." required>
-            <button type="submit" class="btn btn-outline-success">Ara</button>
-        </form>
+            <!-- ✅ Arama Formu -->
+            <form th:action="@{/search}" method="get" class="input-group input-group-sm w-50">
+                <input type="text" name="query" class="form-control" placeholder="Film ara..." required>
+                <button type="submit" class="btn btn-sm btn-outline-success">Ara</button>
+            </form>
 
-        <div>
-            <div th:if="${#authentication != null and #authentication.name != 'anonymousUser'}"
-                 class="d-flex align-items-center gap-2">
-                <span>Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong></span>
+            <span>Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong></span>
 
-                <!-- ✅ Güvenli çıkış: POST form -->
-                <form th:action="@{/logout}" method="post" class="d-inline">
-                    <button type="submit" class="btn btn-outline-danger btn-sm">Çıkış Yap</button>
-                </form>
-            </div>
+            <!-- ✅ Güvenli çıkış: POST form -->
+            <form th:action="@{/logout}" method="post" class="d-inline">
+                <button type="submit" class="btn btn-outline-danger btn-sm">Çıkış Yap</button>
+            </form>
         </div>
     </div>
 
