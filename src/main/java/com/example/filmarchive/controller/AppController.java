@@ -72,6 +72,7 @@ public class AppController {
 
         model.addAttribute("films", films);
         model.addAttribute("genres", genres);
+        model.addAttribute("selectedGenre", genre); // 💥 yeni eklendi
 
         return "film_list";
     }
