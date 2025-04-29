@@ -76,6 +76,13 @@ public class AppController {
 
         return "film_list";
     }
+    @GetMapping("/search")
+    public String searchFilms(@RequestParam("query") String query, Model model) {
+        List<Film> foundFilms = filmService.findByTitleContaining(query);
+        model.addAttribute("films", foundFilms);
+        return "film_list"; // search_results.html sayfasına yönlendir
+    }
+
 
     // ✅ FİLM DETAYI + YORUMLAR + PUAN ORTALAMASI
     @GetMapping("/films/{id}")

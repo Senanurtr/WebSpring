@@ -1,19 +1,40 @@
 <!DOCTYPE html>
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
+    <meta charset="UTF-8">
+    <title>Film Arşivi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
 <div th:fragment="header">
-    <div th:if="${#authentication.name != 'anonymousUser'}">
-        Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong>!
-        <a th:href="@{/logout}">Çıkış Yap</a>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a th:href="@{/films}" class="btn btn-outline-primary">Anasayfa</a>
+
+        <!-- ✅ Arama Formu -->
+        <form th:action="@{/search}" method="get" class="d-flex gap-2">
+            <input type="text" name="query" class="form-control" placeholder="Film ara..." required>
+            <button type="submit" class="btn btn-outline-success">Ara</button>
+        </form>
+
+        <div>
+            <div th:if="${#authentication != null and #authentication.name != 'anonymousUser'}"
+                 class="d-flex align-items-center gap-2">
+                <span>Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong></span>
+
+                <!-- ✅ Güvenli çıkış: POST form -->
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Çıkış Yap</button>
+                </form>
+            </div>
+        </div>
     </div>
-    <div th:if="${#authentication.name == 'anonymousUser'}">
-        <a th:href="@{/login}">Giriş Yap</a> | <a th:href="@{/register}">Kayıt Ol</a>
-    </div>
+
     <hr>
 </div>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
