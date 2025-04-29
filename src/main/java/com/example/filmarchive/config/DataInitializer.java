@@ -70,7 +70,7 @@ public class DataInitializer {
             film3.setGenre("Sci-Fi");
             film3.setYear(2014);
             film3.setDescription("Exploration of time, space, and love.");
-            film3.setImage(loadImageAsBytes("inception.jpg"));
+            film3.setImage(loadImageAsBytes("interstellar.jpg"));
 
             filmRepository.save(film1);
             filmRepository.save(film2);
