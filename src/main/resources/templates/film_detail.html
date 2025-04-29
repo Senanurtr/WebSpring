@@ -19,10 +19,13 @@
 </div>
 
 <!-- Yorumlar -->
-<h4>Yorumlar</h4>
-<div th:each="comment : ${comments}">
-    <p><strong th:text="${comment.username}">Kullanıcı Adı</strong>: <span th:text="${comment.content}">Yorum</span></p>
-</div>
+<!-- Yorum Yap -->
+<h4>Yorum Yap</h4>
+<form action="#" th:action="@{/films/{id}/comments(id=${film.id})}" method="post">
+    <textarea name="content" placeholder="Yorumunuzu yazın" required></textarea>
+    <button type="submit">Yorum Ekle</button>
+</form>
+
 
 <!-- Yorum Ekleme Formu -->
 <h4>Yorum Yap</h4>

@@ -3,17 +3,21 @@ package com.example.filmarchive.controller;
 import com.example.filmarchive.*;
 import com.example.filmarchive.entity.Comment;
 import com.example.filmarchive.entity.Film;
+import com.example.filmarchive.entity.User;
 import com.example.filmarchive.service.CommentService;
 import com.example.filmarchive.service.FilmService;
+import com.example.filmarchive.service.UserService;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.desktop.UserSessionEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +28,12 @@ public class FilmController {
 
     private final FilmService filmService;
     private final CommentService commentService;
+    private final UserService userService;
 
-    public FilmController(FilmService filmService, CommentService commentService) {
+    public FilmController(FilmService filmService, CommentService commentService, UserService userService) {
         this.filmService = filmService;
         this.commentService = commentService;
+        this.userService = userService;
     }
 
     // Film listesi sayfası
@@ -48,18 +54,22 @@ public class FilmController {
         return "film_detail";
     }
 
-    // Yorum ekleme işlemi
     @PostMapping("/{id}/comments")
-    public String addComment(@PathVariable("id") Long id, @RequestParam String username, @RequestParam String content) {
+    public String addComment(@PathVariable("id") Long id,
+                             @RequestParam String content,
+                             @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal) {
+
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+        User user = userService.findByUsername(principal.getUsername()).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
         Comment comment = new Comment();
-        comment.setUsername(username);
+        comment.setUsername(user.getUsername()); // Kullanıcının sistemdeki username'i alınacak
         comment.setContent(content);
         comment.setFilm(film);
         commentService.save(comment);
+
         return "redirect:/films/" + id;
     }
-
     // Film ekleme/güncelleme formu sayfası
     @GetMapping("/add")
     public String showFilmForm(Model model) {
