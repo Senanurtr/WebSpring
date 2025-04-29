@@ -1,9 +1,7 @@
 package com.example.filmarchive.controller;
 
-
 import com.example.filmarchive.entity.*;
 import com.example.filmarchive.service.*;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,21 +20,24 @@ public class AppController {
     private final RoleService roleService;
     private final FilmService filmService;
     private final CommentService commentService;
+    private final RatingService ratingService;
 
-    public AppController(UserService userService, RoleService roleService, FilmService filmService, CommentService commentService) {
+    public AppController(UserService userService, RoleService roleService, FilmService filmService,
+                         CommentService commentService, RatingService ratingService) {
         this.userService = userService;
         this.roleService = roleService;
         this.filmService = filmService;
         this.commentService = commentService;
+        this.ratingService = ratingService;
     }
 
-    // 📌 GİRİŞ SAYFASI
+    // ✅ LOGIN SAYFASI
     @GetMapping("/login")
     public String showLoginPage() {
         return "login";
     }
 
-    // 📌 KAYIT SAYFASI
+    // ✅ REGISTER SAYFASI
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         model.addAttribute("user", new User());
@@ -53,11 +54,25 @@ public class AppController {
         return "redirect:/login?success";
     }
 
-    // 📌 TÜM FİLMLER
+    // ✅ TÜM FİLMLERİ LİSTELE
     @GetMapping("/films")
-    public String listFilms(Model model) {
-        List<Film> films = filmService.findAll();
+    public String listFilms(@RequestParam(value = "genre", required = false) String genre, Model model) {
+        List<Film> films;
+        if (genre != null && !genre.isEmpty()) {
+            films = filmService.findByGenreContainingIgnoreCase(genre);
+        } else {
+            films = filmService.findAll();
+        }
+
+        // Bütün türleri de çıkaralım sidebar için
+        List<String> genres = films.stream()
+                .map(Film::getGenre)
+                .distinct()
+                .toList();
+
         model.addAttribute("films", films);
+        model.addAttribute("genres", genres);
+
         return "film_list";
     }
     @GetMapping("/search")
@@ -68,23 +83,29 @@ public class AppController {
     }
 
 
-    // 📌 FİLM DETAY
+    // ✅ FİLM DETAYI + YORUMLAR + PUAN ORTALAMASI
     @GetMapping("/films/{id}")
     public String getFilmDetail(@PathVariable Long id, Model model) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         List<Comment> comments = commentService.findByFilmId(id);
+        double averageRating = ratingService.calculateAverageRating(film);
+
         model.addAttribute("film", film);
         model.addAttribute("comments", comments);
+        model.addAttribute("averageRating", averageRating);
+
         return "film_detail";
     }
 
-    // 📌 YORUM EKLE
+    // ✅ FİLME YORUM EKLE
     @PostMapping("/films/{id}/comments")
     public String addComment(@PathVariable Long id,
                              @RequestParam String content,
                              @AuthenticationPrincipal UserDetails principal) {
+
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
-        User user = userService.findByUsername(principal.getUsername()).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+        User user = userService.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         Comment comment = new Comment();
         comment.setUsername(user.getUsername());
@@ -95,16 +116,36 @@ public class AppController {
         return "redirect:/films/" + id;
     }
 
-    // 📌 FİLM EKLE FORMU
+    // ✅ FİLME PUAN VER
+    @PostMapping("/films/{id}/rate")
+    public String rateFilm(@PathVariable Long id,
+                           @RequestParam int score,
+                           @AuthenticationPrincipal UserDetails principal) {
+
+        Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+        User user = userService.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        Optional<Rating> existingRating = ratingService.findByUserAndFilm(user, film);
+
+        Rating rating = existingRating.orElseGet(() -> new Rating(user, film, score));
+        rating.setScore(score); // güncelle veya ilk defa ver
+
+        ratingService.save(rating);
+        return "redirect:/films/" + id;
+    }
+
+    // ✅ FİLM EKLEME FORMU
     @GetMapping("/films/add")
     public String showFilmForm(Model model) {
         model.addAttribute("film", new Film());
         return "film_form";
     }
 
-    // 📌 FİLM EKLEME POST
+    // ✅ FİLM KAYDET
     @PostMapping("/films")
-    public String addFilm(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+    public String addFilm(@ModelAttribute Film film,
+                          @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
         if (!imageFile.isEmpty()) {
             film.setImage(imageFile.getBytes());
         }
@@ -112,7 +153,7 @@ public class AppController {
         return "redirect:/films";
     }
 
-    // 📌 GÖRSEL GETİR
+    // ✅ GÖRSEL GETİR
     @GetMapping("/films/{id}/image")
     public ResponseEntity<byte[]> getFilmImage(@PathVariable Long id) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));

@@ -30,6 +30,10 @@ public class FilmService {
     public Film save(Film film) {
         return filmRepository.save(film);
     }
+    public List<Film> findByGenreContainingIgnoreCase(String genre) {
+        return filmRepository.findByGenreContainingIgnoreCase(genre);
+    }
+
 
     public List<Film> findByTitleContaining(String title) {
         return filmRepository.findByTitleContainingIgnoreCase(title);
