@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+<body>
+
+<div th:fragment="header">
+    <div th:if="${#authentication.name != 'anonymousUser'}">
+        Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong>!
+        <a th:href="@{/logout}">Çıkış Yap</a>
+    </div>
+    <div th:if="${#authentication.name == 'anonymousUser'}">
+        <a th:href="@{/login}">Giriş Yap</a> | <a th:href="@{/register}">Kayıt Ol</a>
+    </div>
+    <hr>
+</div>
+
+</body>
+</html>
