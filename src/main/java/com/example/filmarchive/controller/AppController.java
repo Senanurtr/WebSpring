@@ -56,9 +56,23 @@ public class AppController {
 
     // ✅ TÜM FİLMLERİ LİSTELE
     @GetMapping("/films")
-    public String listFilms(Model model) {
-        List<Film> films = filmService.findAll();
+    public String listFilms(@RequestParam(value = "genre", required = false) String genre, Model model) {
+        List<Film> films;
+        if (genre != null && !genre.isEmpty()) {
+            films = filmService.findByGenreContainingIgnoreCase(genre);
+        } else {
+            films = filmService.findAll();
+        }
+
+        // Bütün türleri de çıkaralım sidebar için
+        List<String> genres = films.stream()
+                .map(Film::getGenre)
+                .distinct()
+                .toList();
+
         model.addAttribute("films", films);
+        model.addAttribute("genres", genres);
+
         return "film_list";
     }
 
