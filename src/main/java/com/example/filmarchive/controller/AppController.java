@@ -2,6 +2,7 @@ package com.example.filmarchive.controller;
 
 import com.example.filmarchive.entity.*;
 import com.example.filmarchive.service.*;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,6 +38,33 @@ public class AppController {
         return "login";
     }
 
+    @PostMapping("/login")
+    public String login(@RequestParam String username,
+                        @RequestParam String password,
+                        HttpSession session) {
+        if ("admin".equals(username) && "admin".equals(password)) {
+            session.setAttribute("username", username);
+            return "redirect:/add_film";
+        }
+        session.setAttribute("username", username);
+        return "redirect:/films";
+    }
+
+    @GetMapping("/add_film")
+    public String showAddFilmPage() {
+        return "add_film";
+    }
+
+    // ✅ Film Kaydetme ve Ana Sayfaya Dönme
+    @PostMapping("/films")
+    public String saveFilm(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
+        if (!imageFile.isEmpty()) {
+            film.setImage(imageFile.getBytes());
+        }
+        filmService.save(film);
+        return "redirect:/films";
+    }
+
     // ✅ REGISTER SAYFASI
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -60,7 +88,6 @@ public class AppController {
                             @RequestParam(value = "sort", required = false) String sort,
                             @RequestParam(value = "query", required = false) String query,
                             Model model) {
-
         List<Film> films;
 
         if (query != null && !query.isEmpty()) {
@@ -80,25 +107,15 @@ public class AppController {
             }
         }
 
-
         List<String> genres = films.stream()
                 .map(Film::getGenre)
                 .distinct()
                 .toList();
-
         model.addAttribute("films", films);
         model.addAttribute("genres", genres);
         model.addAttribute("selectedGenre", genre);
         return "film_list";
     }
-
-    @GetMapping("/search")
-    public String searchFilms(@RequestParam("query") String query, Model model) {
-        List<Film> foundFilms = filmService.findByTitleContaining(query);
-        model.addAttribute("films", foundFilms);
-        return "film_list"; // search_results.html sayfasına yönlendir
-    }
-
 
     // ✅ FİLM DETAYI + YORUMLAR + PUAN ORTALAMASI
     @GetMapping("/films/{id}")
@@ -119,7 +136,6 @@ public class AppController {
     public String addComment(@PathVariable Long id,
                              @RequestParam String content,
                              @AuthenticationPrincipal UserDetails principal) {
-
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         User user = userService.findByUsername(principal.getUsername())
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
@@ -138,53 +154,25 @@ public class AppController {
     public String rateFilm(@PathVariable Long id,
                            @RequestParam int score,
                            @AuthenticationPrincipal UserDetails principal) {
-
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         User user = userService.findByUsername(principal.getUsername())
                 .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
-
         Optional<Rating> existingRating = ratingService.findByUserAndFilm(user, film);
+
         Rating rating = existingRating.orElseGet(() -> new Rating(user, film, score));
-
-        int previousVoteCount = film.getVoteCount();
-        double previousTotal = film.getRating() * previousVoteCount;
-
-        // Eğer kullanıcı önceden puan verdiyse, eski puanı silip güncel puanı ekle
         if (existingRating.isPresent()) {
-            double updatedTotal = previousTotal - existingRating.get().getScore() + score;
-            double newAverage = updatedTotal / previousVoteCount;
-            film.setRating(newAverage);
+            double totalRating = film.getRating() * film.getVoteCount() - existingRating.get().getScore() + score;
+            film.setRating(totalRating / film.getVoteCount());
         } else {
-            int newVoteCount = previousVoteCount + 1;
-            double newAverage = (previousTotal + score) / newVoteCount;
-            film.setRating(newAverage);
-            film.setVoteCount(newVoteCount);
+            double totalRating = film.getRating() * film.getVoteCount() + score;
+            film.setVoteCount(film.getVoteCount() + 1);
+            film.setRating(totalRating / film.getVoteCount());
         }
 
         rating.setScore(score);
         filmService.save(film);
         ratingService.save(rating);
-
         return "redirect:/films/" + id;
-    }
-
-
-    // ✅ FİLM EKLEME FORMU
-    @GetMapping("/films/add")
-    public String showFilmForm(Model model) {
-        model.addAttribute("film", new Film());
-        return "film_form";
-    }
-
-    // ✅ FİLM KAYDET
-    @PostMapping("/films")
-    public String addFilm(@ModelAttribute Film film,
-                          @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (!imageFile.isEmpty()) {
-            film.setImage(imageFile.getBytes());
-        }
-        filmService.save(film);
-        return "redirect:/films";
     }
 
     // ✅ GÖRSEL GETİR
@@ -196,11 +184,12 @@ public class AppController {
         headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
+
     // 📌 ADMIN: Film Ekleme Formu
     @GetMapping("/admin/films/add")
     public String showAdminFilmForm(Model model) {
         model.addAttribute("film", new Film());
-        return "admin/film_form"; // farklı bir form görünümü
+        return "admin/film_form";
     }
 
     // 📌 ADMIN: Film Kaydet
