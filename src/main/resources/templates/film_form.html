@@ -6,15 +6,20 @@
     <title>Film Ekle</title>
 </head>
 <body>
+<div th:replace="header :: header"></div>
+
 
 <h2>Film Ekle</h2>
 
-<form action="#" th:action="@{/films}" method="post">
+<form action="#" th:action="@{/films}" method="post" enctype="multipart/form-data">
     <input type="text" name="title" placeholder="Film Başlığı" required><br>
     <input type="text" name="genre" placeholder="Tür" required><br>
     <input type="number" name="year" placeholder="Yıl" required><br>
     <textarea name="description" placeholder="Film Açıklaması" required></textarea><br>
-    <input type="file" name="image" accept="image/*"><br>
+
+    <!-- HATALIYDI name=\"image\" doğru haliyle değiştirildi -->
+    <input type="file" name="imageFile" accept="image/*"><br>
+
     <button type="submit">Ekle</button>
 </form>
 
