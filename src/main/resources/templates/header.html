@@ -20,7 +20,7 @@
 
             <span>Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong></span>
 
-            <!-- ✅ Güvenli çıkış: POST form -->
+
             <form th:action="@{/logout}" method="post" class="d-inline">
                 <button type="submit" class="btn btn-outline-danger btn-sm">Çıkış Yap</button>
             </form>
