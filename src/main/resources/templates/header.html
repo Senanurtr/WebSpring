@@ -12,9 +12,19 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a th:href="@{/films}" class="btn btn-outline-primary">Anasayfa</a>
 
-            <!-- ✅ Arama Formu -->
-            <form th:action="@{/search}" method="get" class="input-group input-group-sm w-50">
-                <input type="text" name="query" class="form-control" placeholder="Film ara..." required>
+            <!-- ✅ Arama + Sıralama Formu -->
+            <form th:action="@{/films}" method="get" class="d-flex gap-2 w-50">
+                <input type="text" name="query" class="form-control form-control-sm" placeholder="Film ara...">
+
+                <select name="sort" class="form-select form-select-sm w-auto">
+                    <option value="">Sıralama Yok</option>
+                    <option value="yearAsc">Yıla Göre (Artan)</option>
+                    <option value="yearDesc">Yıla Göre (Azalan)</option>
+                    <option value="ratingDesc">Puan (Yüksekten)</option>
+                    <option value="ratingAsc">Puan (Düşükten)</option>
+                </select>
+
+
                 <button type="submit" class="btn btn-sm btn-outline-success">Ara</button>
             </form>
 
@@ -37,6 +47,7 @@
 
     <hr>
 </div>
+
 
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
