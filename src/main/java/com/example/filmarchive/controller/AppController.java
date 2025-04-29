@@ -1,52 +1,69 @@
 package com.example.filmarchive.controller;
 
-import com.example.filmarchive.*;
-import com.example.filmarchive.entity.Comment;
-import com.example.filmarchive.entity.Film;
-import com.example.filmarchive.entity.User;
-import com.example.filmarchive.service.CommentService;
-import com.example.filmarchive.service.FilmService;
-import com.example.filmarchive.service.UserService;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+
+import com.example.filmarchive.entity.*;
+import com.example.filmarchive.service.*;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.awt.desktop.UserSessionEvent;
 import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
-@RequestMapping("/films")
-public class FilmController {
+public class AppController {
 
+    private final UserService userService;
+    private final RoleService roleService;
     private final FilmService filmService;
     private final CommentService commentService;
-    private final UserService userService;
 
-    public FilmController(FilmService filmService, CommentService commentService, UserService userService) {
+    public AppController(UserService userService, RoleService roleService, FilmService filmService, CommentService commentService) {
+        this.userService = userService;
+        this.roleService = roleService;
         this.filmService = filmService;
         this.commentService = commentService;
-        this.userService = userService;
     }
 
-    // Film listesi sayfası
-    @GetMapping
+    // 📌 GİRİŞ SAYFASI
+    @GetMapping("/login")
+    public String showLoginPage() {
+        return "login";
+    }
+
+    // 📌 KAYIT SAYFASI
+    @GetMapping("/register")
+    public String showRegistrationForm(Model model) {
+        model.addAttribute("user", new User());
+        return "register";
+    }
+
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute User user) {
+        Role userRole = roleService.findByName("USER");
+        if (userRole != null) {
+            user.setRoles(Collections.singleton(userRole));
+        }
+        userService.save(user);
+        return "redirect:/login?success";
+    }
+
+    // 📌 TÜM FİLMLER
+    @GetMapping("/films")
     public String listFilms(Model model) {
         List<Film> films = filmService.findAll();
         model.addAttribute("films", films);
         return "film_list";
     }
 
-    // Film detay sayfası
-    @GetMapping("/{id}")
-    public String getFilmDetail(@PathVariable("id") Long id, Model model) {
+    // 📌 FİLM DETAY
+    @GetMapping("/films/{id}")
+    public String getFilmDetail(@PathVariable Long id, Model model) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         List<Comment> comments = commentService.findByFilmId(id);
         model.addAttribute("film", film);
@@ -54,44 +71,47 @@ public class FilmController {
         return "film_detail";
     }
 
-    @PostMapping("/{id}/comments")
-    public String addComment(@PathVariable("id") Long id,
+    // 📌 YORUM EKLE
+    @PostMapping("/films/{id}/comments")
+    public String addComment(@PathVariable Long id,
                              @RequestParam String content,
-                             @AuthenticationPrincipal org.springframework.security.core.userdetails.User principal) {
-
+                             @AuthenticationPrincipal UserDetails principal) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         User user = userService.findByUsername(principal.getUsername()).orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
 
         Comment comment = new Comment();
-        comment.setUsername(user.getUsername()); // Kullanıcının sistemdeki username'i alınacak
+        comment.setUsername(user.getUsername());
         comment.setContent(content);
         comment.setFilm(film);
         commentService.save(comment);
 
         return "redirect:/films/" + id;
     }
-    // Film ekleme/güncelleme formu sayfası
-    @GetMapping("/add")
+
+    // 📌 FİLM EKLE FORMU
+    @GetMapping("/films/add")
     public String showFilmForm(Model model) {
         model.addAttribute("film", new Film());
         return "film_form";
     }
 
-    // Film ekleme işlemi (Güncellenmiş hali!)
-    @PostMapping
+    // 📌 FİLM EKLEME POST
+    @PostMapping("/films")
     public String addFilm(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
         if (!imageFile.isEmpty()) {
-            film.setImage(imageFile.getBytes()); // multipart dosyasını byte dizisine çeviriyoruz
+            film.setImage(imageFile.getBytes());
         }
         filmService.save(film);
         return "redirect:/films";
     }
-    @GetMapping("/{id}/image")
-    public ResponseEntity<byte[]> getFilmImage(@PathVariable("id") Long id) {
+
+    // 📌 GÖRSEL GETİR
+    @GetMapping("/films/{id}/image")
+    public ResponseEntity<byte[]> getFilmImage(@PathVariable Long id) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
         byte[] image = film.getImage();
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_JPEG); // veya PNG'ye göre ayarla
+        headers.setContentType(MediaType.IMAGE_JPEG);
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
 }
