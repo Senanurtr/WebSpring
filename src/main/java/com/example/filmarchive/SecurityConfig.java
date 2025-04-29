@@ -2,6 +2,7 @@ package com.example.filmarchive;
 
 import com.example.filmarchive.entity.User;
 import com.example.filmarchive.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    @Autowired
     private final UserRepository userRepository;
 
     public SecurityConfig(UserRepository userRepository) {
@@ -40,7 +42,10 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .logout(logout -> logout
-                        .logoutSuccessUrl("/login?logout")
+                        .logoutUrl("/logout")  // Çıkış URL'si
+                        .logoutSuccessUrl("/login?logout") // Çıkıştan sonra giriş ekranına yönlendirme
+                        .invalidateHttpSession(true) // **Kullanıcı oturumunu tamamen sıfırla**
+                        .deleteCookies("JSESSIONID") // **Oturumla ilgili tüm çerezleri temizle**
                         .permitAll()
                 );
 

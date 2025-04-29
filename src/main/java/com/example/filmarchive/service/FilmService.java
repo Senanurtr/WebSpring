@@ -34,4 +34,9 @@ public class FilmService {
         return filmRepository.findByGenreContainingIgnoreCase(genre);
     }
 
+
+    public List<Film> findByTitleContaining(String title) {
+        return filmRepository.findByTitleContainingIgnoreCase(title);
+    }
+
 }
