@@ -19,6 +19,27 @@ public class Film {
     private String genre;
 
     private int year;
+    @Column(nullable = false)
+    private double rating;
+    @Column(nullable = false)
+    private int voteCount = 100; // başlangıçta sanki 100 kişi oylamış gibi davranacağız
+
+    public int getVoteCount() {
+        return voteCount;
+    }
+
+    public void setVoteCount(int voteCount) {
+        this.voteCount = voteCount;
+    }
+
+
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
 
     @Lob
     private byte[] image;
