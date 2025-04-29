@@ -72,8 +72,13 @@ public class AppController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user) {
-        user.setRole(User.Role.USER); // 🔥 `Set<Role>` yerine tek ENUM olarak atanıyor
+    public String registerUser(@ModelAttribute User user, Model model) {
+        if (userService.isUsernameTaken(user.getUsername())) {
+            model.addAttribute("error", "Bu kullanıcı adı zaten alınmış!");
+            return "register"; // Kullanıcıyı aynı sayfaya geri yönlendir
+        }
+
+        user.setRole(User.Role.USER);
         userService.save(user);
         return "redirect:/login?success";
     }

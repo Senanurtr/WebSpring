@@ -17,7 +17,9 @@ public class UserService {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
-
+    public boolean isUsernameTaken(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
     public User save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreleme işlemi
         return userRepository.save(user);
