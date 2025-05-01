@@ -30,8 +30,11 @@
 
             <span>Hoşgeldin, <strong th:text="${#authentication.name}">Kullanıcı Adı</strong></span>
 
-                <!-- ✅ Admin ise Film Ekle butonu -->
-                <a th:if="${#authentication.name == 'admin'}" th:href="@{/add_film}" class="btn btn-success btn-sm">Film Ekle</a>
+            <a th:if="${#authorization.expression('hasRole(''ADMIN'')')}"
+               th:href="@{/admin/films/add}"
+               class="btn btn-success btn-sm">
+                Film Ekle
+            </a>
 
                 <!-- ✅ Güvenli çıkış: POST form -->
                 <form th:action="@{/logout}" method="post" class="d-inline">

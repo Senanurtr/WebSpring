@@ -2,7 +2,6 @@ package com.example.filmarchive.controller;
 
 import com.example.filmarchive.entity.*;
 import com.example.filmarchive.service.*;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -37,22 +36,6 @@ public class AppController {
         return "login";
     }
 
-    @PostMapping("/login")
-    public String login(@RequestParam String username,
-                        @RequestParam String password,
-                        HttpSession session) {
-        if ("admin".equals(username) && "admin".equals(password)) {
-            session.setAttribute("username", username);
-            return "redirect:/add_film";
-        }
-        session.setAttribute("username", username);
-        return "redirect:/films";
-    }
-
-    @GetMapping("/add_film")
-    public String showAddFilmPage() {
-        return "add_film";
-    }
 
     // ✅ Film Kaydetme ve Ana Sayfaya Dönme
     @PostMapping("/films")
@@ -72,10 +55,17 @@ public class AppController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute User user, Model model) {
+    public String registerUser(@ModelAttribute User user,
+                               @RequestParam String confirmPassword,
+                               Model model) {
         if (userService.isUsernameTaken(user.getUsername())) {
             model.addAttribute("error", "Bu kullanıcı adı zaten alınmış!");
-            return "register"; // Kullanıcıyı aynı sayfaya geri yönlendir
+            return "register";
+        }
+
+        if (!user.getPassword().equals(confirmPassword)) {
+            model.addAttribute("passwordError", "Şifreler uyuşmuyor!"); // ✅ Şifreler eşleşmezse hata mesajı gönder
+            return "register";
         }
 
         user.setRole(User.Role.USER);
@@ -190,7 +180,7 @@ public class AppController {
     @GetMapping("/admin/films/add")
     public String showAdminFilmForm(Model model) {
         model.addAttribute("film", new Film());
-        return "admin/film_form";
+        return "add_film";
     }
 
     // 📌 ADMIN: Film Kaydet

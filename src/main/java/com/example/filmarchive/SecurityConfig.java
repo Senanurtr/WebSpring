@@ -32,11 +32,12 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/register", "/login", "/css/**", "/images/**").permitAll()
-                        .requestMatchers("/films/add").hasRole("ADMIN") // Admin erişimi kontrolü
+                        .requestMatchers("/admin/**").hasRole("ADMIN") // Admin erişimi kontrolü
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .failureUrl("/login?error")
                         .defaultSuccessUrl("/films", true)
                         .permitAll()
                 )
