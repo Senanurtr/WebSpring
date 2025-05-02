@@ -186,10 +186,33 @@ public class AppController {
     // 📌 ADMIN: Film Kaydet
     @PostMapping("/admin/films")
     public String addFilmAdmin(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (!imageFile.isEmpty()) {
-            film.setImage(imageFile.getBytes());
+        if (film.getId() != null) { // Güncellenen bir film mi?
+            Film existingFilm = filmService.findById(film.getId())
+                    .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+
+            if (!imageFile.isEmpty()) {
+                film.setImage(imageFile.getBytes()); // ✅ Yeni resim varsa güncelle
+            } else {
+                film.setImage(existingFilm.getImage()); // ✅ Eski resmi koru!
+            }
         }
         filmService.save(film);
-        return "redirect:/admin/films/add?success";
+
+        return "redirect:/films?updateSuccess";
+    }
+    @GetMapping("/admin/films/edit/{id}")
+    public String showEditFilmForm(@PathVariable Long id, Model model) {
+        Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+        model.addAttribute("film", film); // Mevcut bilgileri modele ekle
+        return "add_film"; // Güncellenmiş sayfa ile aç
+    }
+
+    @PostMapping("/admin/films/delete/{id}")
+    public String deleteFilm(@PathVariable Long id) {
+        Film film = filmService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+
+        filmService.delete(film); // 📌 Filmi veritabanından sil
+        return "redirect:/films?deleteSuccess"; // 📌 Silme işlemi sonrası film listesine yönlendir
     }
 }

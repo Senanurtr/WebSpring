@@ -12,6 +12,12 @@
 
 <!-- HEADER -->
 <div th:replace="header :: header"></div>
+<div th:if="${param.deleteSuccess}" class="alert alert-success">
+    ✅ Film başarıyla silindi!
+</div>
+<div th:if="${param.updateSuccess}" class="alert alert-success">
+    ✅ Film başarıyla güncellendi!
+</div>
 
 <div class="row">
     <!-- SOL MENÜ -->

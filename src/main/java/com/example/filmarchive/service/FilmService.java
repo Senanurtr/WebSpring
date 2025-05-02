@@ -45,4 +45,7 @@ public class FilmService {
         return filmRepository.findByTitleContainingIgnoreCase(title);
     }
 
+    public void delete(Film film) {
+        filmRepository.delete(film);
+    }
 }

@@ -2,46 +2,63 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Film Ekle</title>
+  <title><span th:if="${film?.id}">Film Düzenle</span><span th:unless="${film?.id}">Film Ekle</span></title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
 
-<!-- HEADER -->
-
 <div class="container mt-5">
   <div class="card shadow-lg p-4">
-    <h2 class="text-center mb-4">🎬 Yeni Film Ekle</h2>
+    <h2 class="text-center mb-4">
+      <span th:if="${film?.id}">✏️ Film Düzenle</span>
+      <span th:unless="${film?.id}">🎬 Yeni Film Ekle</span>
+    </h2>
 
-    <form th:action="@{/films}" method="post" enctype="multipart/form-data">
+    <form th:action="@{/admin/films}" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="id" th:value="${film?.id}">
 
+      <!-- Film Başlığı -->
       <div class="mb-3">
         <label for="title" class="form-label">Film Başlığı</label>
-        <input type="text" id="title" name="title" class="form-control" placeholder="Örn: Esaretin Bedeli" required>
+        <input type="text" id="title" name="title" class="form-control" th:value="${film?.title}" placeholder="Örn: Esaretin Bedeli" required>
       </div>
 
+      <!-- Film Türü -->
       <div class="mb-3">
         <label for="genre" class="form-label">Film Türü</label>
-        <input type="text" id="genre" name="genre" class="form-control" placeholder="Örn: Dram, Aksiyon" required>
+        <input type="text" id="genre" name="genre" class="form-control" th:value="${film?.genre}" placeholder="Örn: Dram, Aksiyon" required>
       </div>
 
+      <!-- Yapım Yılı -->
       <div class="mb-3">
         <label for="year" class="form-label">Yapım Yılı</label>
-        <input type="number" id="year" name="year" class="form-control" placeholder="Örn: 1994" min="1900" max="2099" required>
+        <input type="number" id="year" name="year" class="form-control" th:value="${film?.year}" placeholder="Örn: 1994" min="1900" max="2099" required>
       </div>
 
+      <!-- Açıklama -->
       <div class="mb-3">
         <label for="description" class="form-label">Açıklama</label>
-        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Film hakkında kısa bilgi..." required></textarea>
+        <textarea id="description" name="description" class="form-control" rows="4" placeholder="Film hakkında kısa bilgi..." required th:text="${film?.description}"></textarea>
       </div>
 
+      <!-- Mevcut Resmi Göster -->
+      <div th:if="${film?.id}" class="mb-3">
+        <p>Mevcut Resim:</p>
+        <img th:src="@{'/films/' + ${film.id} + '/image'}" class="img-fluid rounded mb-2" style="max-width: 200px;">
+      </div>
+
+      <!-- Yeni Resim Yükleme -->
       <div class="mb-3">
         <label for="imageFile" class="form-label">Film Afişi (resim yükle)</label>
         <input type="file" id="imageFile" name="imageFile" class="form-control" accept="image/*">
       </div>
 
+      <!-- Butonlar -->
       <div class="d-grid gap-2">
-        <button type="submit" class="btn btn-success">➕ Ekle</button>
+        <button type="submit" class="btn btn-success">
+          <span th:if="${film?.id}">💾 Güncelle</span>
+          <span th:unless="${film?.id}">➕ Ekle</span>
+        </button>
         <a th:href="@{/films}" class="btn btn-secondary">⬅️ Geri Dön</a>
       </div>
     </form>
