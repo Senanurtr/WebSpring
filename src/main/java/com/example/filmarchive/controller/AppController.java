@@ -183,10 +183,9 @@ public class AppController {
         return "add_film";
     }
 
-    // 📌 ADMIN: Film Kaydet
     @PostMapping("/admin/films")
     public String addFilmAdmin(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (film.getId() != null) { // Güncellenen bir film mi?
+        if (film.getId() != null) { // 🔹 Güncellenen bir film mi?
             Film existingFilm = filmService.findById(film.getId())
                     .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
 
@@ -196,10 +195,18 @@ public class AppController {
                 film.setImage(existingFilm.getImage()); // ✅ Eski resmi koru!
             }
         }
-        filmService.save(film);
+        else { // 📌 Yeni bir film ekleniyorsa, resim kontrolünü ekle!
+            if (!imageFile.isEmpty()) {
+                film.setImage(imageFile.getBytes()); // ✅ Yeni resim ekleniyorsa kaydet!
+            } else {
+                throw new IllegalArgumentException("Film eklerken resim zorunludur!"); // 📌 Uyarı ekleyebilirsin
+            }
+        }
 
-        return "redirect:/films?updateSuccess";
+        filmService.save(film);
+        return "redirect:/films?updateSuccess"; // 🔹 Film başarıyla kaydedildiğinde yönlendir
     }
+
     @GetMapping("/admin/films/edit/{id}")
     public String showEditFilmForm(@PathVariable Long id, Model model) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
