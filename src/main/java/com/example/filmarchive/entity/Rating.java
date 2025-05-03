@@ -13,8 +13,10 @@ public class Rating {
     @ManyToOne(optional = false)
     private User user;
 
-    @ManyToOne(optional = false)
+    @ManyToOne
+    @JoinColumn(name = "film_id", nullable = false)
     private Film film;
+
 
     private int score; // 1-5 arası puan
 

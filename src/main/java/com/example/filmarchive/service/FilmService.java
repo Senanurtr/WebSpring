@@ -45,7 +45,7 @@ public class FilmService {
         return filmRepository.findByTitleContainingIgnoreCase(title);
     }
 
-    public void delete(Film film) {
-        filmRepository.delete(film);
+    public void deleteById(Long id) {
+        filmRepository.deleteById(id); // 📌 Direkt ID ile silme işlemi
     }
 }

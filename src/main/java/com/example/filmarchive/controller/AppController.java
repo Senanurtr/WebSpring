@@ -216,10 +216,14 @@ public class AppController {
 
     @PostMapping("/admin/films/delete/{id}")
     public String deleteFilm(@PathVariable Long id) {
-        Film film = filmService.findById(id)
-                .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
+        try {
+            Film film = filmService.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
 
-        filmService.delete(film); // 📌 Filmi veritabanından sil
-        return "redirect:/films?deleteSuccess"; // 📌 Silme işlemi sonrası film listesine yönlendir
+            filmService.deleteById(id);
+            return "redirect:/films?deleteSuccess"; // ✅ Silme başarılı olursa yönlendirme yap
+        } catch (RuntimeException e) {
+            return "redirect:/films?error=FilmSilinemedi"; // ❌ Silme hatası varsa hata mesajı ile yönlendir
+        }
     }
 }

@@ -12,7 +12,9 @@ public class Comment {
     private String content;
 
     @ManyToOne
+    @JoinColumn(name = "film_id", nullable = false)
     private Film film;
+
 
 
     public Long getId() {

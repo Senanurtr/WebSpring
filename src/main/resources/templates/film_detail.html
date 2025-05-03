@@ -21,7 +21,9 @@
         <a th:href="@{/admin/films/edit/{id}(id=${film.id})}" class="btn btn-warning">✏️ Düzenle</a>
 
         <!-- 🗑️ Silme Butonu -->
-        <form th:action="@{/admin/films/delete/{id}(id=${film.id})}" method="post" onsubmit="return confirm('Bu filmi silmek istediğinizden emin misiniz?');">
+        <form th:action="@{/admin/films/delete/{id}(id=${film.id})}" method="post"
+              onsubmit="return confirm('Bu filmi silmek istediğinizden emin misiniz?');">
+            <input type="hidden" name="_method" value="DELETE"> <!-- 📌 Spring Boot için DELETE desteği -->
             <button type="submit" class="btn btn-danger">🗑️ Sil</button>
         </form>
     </div>

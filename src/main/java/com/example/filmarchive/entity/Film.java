@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 @Entity
 @Table(name = "films")
@@ -23,6 +24,12 @@ public class Film {
     private double rating;
     @Column(nullable = false)
     private int voteCount = 100; // başlangıçta sanki 100 kişi oylamış gibi davranacağız
+
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "film", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Rating> ratings;
 
     public int getVoteCount() {
         return voteCount;
