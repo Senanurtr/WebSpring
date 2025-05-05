@@ -15,7 +15,7 @@ public class CommentService {
         this.commentRepository = commentRepository;
     }
 
-    // Film ID'ye göre yorumları getir
+    // idye gore yorumlari getirdik
     public List<Comment> findByFilmId(Long filmId) {
         return commentRepository.findByFilmId(filmId);
     }

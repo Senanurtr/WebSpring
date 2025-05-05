@@ -23,14 +23,14 @@ public class DataInitializer {
             PasswordEncoder passwordEncoder
     ) {
         return args -> {
-            // Kullanıcılar ve roller
+            // kullanici ve roller
             User admin = new User();
             admin.setUsername("admin");
             admin.setPassword(passwordEncoder.encode("admin"));
             admin.setRole(User.Role.ADMIN);
             userRepository.save(admin);
 
-            // Filmler
+            // filmler
             Film film1 = new Film();
             film1.setTitle("Inception");
             film1.setGenre("Sci-Fi");
@@ -56,19 +56,42 @@ public class DataInitializer {
             film3.setRating(3.6);
 
             Film film4 = new Film();
-            film4.setTitle("Recep İvedik");
-            film4.setGenre("Comedy");
-            film4.setYear(2008);
-            film4.setDescription("Kaba saba ama komik bir karakterin şehir maceraları.");
-            film4.setImage(loadImageAsBytes("reco.jpg"));
-            film4.setRating(2.1);
+            film4.setTitle("The Matrix");
+            film4.setGenre("Action");
+            film4.setYear(1999);
+            film4.setDescription("A computer hacker learns the truth about reality.");
+            film4.setImage(loadImageAsBytes("matrix.jpeg"));
+            film4.setRating(4.7);
+
+
+            Film film5 = new Film();
+            film5.setTitle("Parasite");
+            film5.setGenre("Thriller");
+            film5.setYear(2019);
+            film5.setDescription("Greed and class discrimination threaten a newly formed symbiotic relationship.");
+            film5.setImage(loadImageAsBytes("parasite.jpg"));
+            film5.setRating(4.6);
+
+            Film film6 = new Film();
+            film6.setTitle("Spirited Away");
+            film6.setGenre("Animation");
+            film6.setYear(2001);
+            film6.setDescription("A young girl enters a world of spirits to save her parents.");
+            film6.setImage(loadImageAsBytes("spiritedaway.jpeg"));
+            film6.setRating(4.8);
+
+
+
 
             filmRepository.save(film1);
             filmRepository.save(film2);
             filmRepository.save(film3);
             filmRepository.save(film4);
+            filmRepository.save(film5);
+            filmRepository.save(film6);
 
-            // Kullanıcılar ve yorumlar (Inception)
+
+            // kullanicilar ve yorumlar (inception)
             User kelly = createUser(userRepository, "Kelly Chan", passwordEncoder, User.Role.USER);
             createComment(commentRepository, kelly, "Inception şüphesiz tüm zamanların en sevdiğim filmlerinden biri.", film1);
 
@@ -78,7 +101,7 @@ public class DataInitializer {
             User devyansh = createUser(userRepository, "Devyansh Chadha", passwordEncoder, User.Role.USER);
             createComment(commentRepository, devyansh, "Hayatımda tekrar izlediğim tek filmdi, çok güzel ve akılda kalıcı!", film1);
 
-            // Kullanıcılar ve yorumlar (The Godfather)
+            // kullanicilar ve yorumlar (godfather)
             User ralph = createUser(userRepository, "Ralph Rahal", passwordEncoder, User.Role.USER);
             createComment(commentRepository, ralph, "Efsanevi Francis Ford Coppola'nın yönettiği Baba (1972), filmde hikaye anlatımını yeniden tanımlayan sinematik bir başyapıttan başka bir şey değil.", film2);
 

@@ -16,7 +16,7 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING) // Enum'ları String olarak sakla
+    @Enumerated(EnumType.STRING) // Enum'ları string olarak sakladik
     @Column(nullable = false)
     private Role role; // Tek bir rol olacak
 

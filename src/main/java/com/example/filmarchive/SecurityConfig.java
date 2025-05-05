@@ -66,7 +66,7 @@ public class SecurityConfig {
             return org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())
                     .password(user.getPassword())
-                    .roles(user.getRole().name()) // Tek ENUM değişkeni olarak alındı
+                    .roles(user.getRole().name()) // ENUM degiskeni olarak aldik
                     .build();
         };
     }

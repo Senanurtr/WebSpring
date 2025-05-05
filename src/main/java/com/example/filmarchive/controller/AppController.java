@@ -37,15 +37,6 @@ public class AppController {
     }
 
 
-    // ✅ Film Kaydetme ve Ana Sayfaya Dönme
-    @PostMapping("/films")
-    public String saveFilm(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (!imageFile.isEmpty()) {
-            film.setImage(imageFile.getBytes());
-        }
-        filmService.save(film);
-        return "redirect:/films";
-    }
 
     // ✅ REGISTER SAYFASI
     @GetMapping("/register")
@@ -64,7 +55,7 @@ public class AppController {
         }
 
         if (!user.getPassword().equals(confirmPassword)) {
-            model.addAttribute("passwordError", "Şifreler uyuşmuyor!"); // ✅ Şifreler eşleşmezse hata mesajı gönder
+            model.addAttribute("passwordError", "Şifreler uyuşmuyor!"); // sifre uyusmazsa hata gonderdil
             return "register";
         }
 
@@ -98,7 +89,7 @@ public class AppController {
             }
         }
 
-        // 📌 ✅ Türler artık film listesine bağlı değil, her zaman tam listeyi alıyoruz!
+
         List<String> genres = filmService.findAllGenres();
 
         model.addAttribute("films", films);
@@ -108,7 +99,7 @@ public class AppController {
         return "film_list";
     }
 
-    // ✅ FİLM DETAYI + YORUMLAR + PUAN ORTALAMASI
+    //  FİLM DETAYI + YORUMLAR + PUAN ORTALAMASI
     @GetMapping("/films/{id}")
     public String getFilmDetail(@PathVariable Long id, Model model) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
@@ -122,7 +113,7 @@ public class AppController {
         return "film_detail";
     }
 
-    // ✅ FİLME YORUM EKLE
+    // FİLME YORUM EKLE
     @PostMapping("/films/{id}/comments")
     public String addComment(@PathVariable Long id,
                              @RequestParam String content,
@@ -140,7 +131,7 @@ public class AppController {
         return "redirect:/films/" + id;
     }
 
-    // ✅ FİLME PUAN VER
+    // FİLME PUAN VER
     @PostMapping("/films/{id}/rate")
     public String rateFilm(@PathVariable Long id,
                            @RequestParam int score,
@@ -166,7 +157,7 @@ public class AppController {
         return "redirect:/films/" + id;
     }
 
-    // ✅ GÖRSEL GETİR
+    // GÖRSEL GETİR
     @GetMapping("/films/{id}/image")
     public ResponseEntity<byte[]> getFilmImage(@PathVariable Long id) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
@@ -176,7 +167,7 @@ public class AppController {
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
 
-    // 📌 ADMIN: Film Ekleme Formu
+    // ADMIN: Film Ekleme Formu
     @GetMapping("/admin/films/add")
     public String showAdminFilmForm(Model model) {
         model.addAttribute("film", new Film());
@@ -185,33 +176,33 @@ public class AppController {
 
     @PostMapping("/admin/films")
     public String addFilmAdmin(@ModelAttribute Film film, @RequestParam("imageFile") MultipartFile imageFile) throws IOException {
-        if (film.getId() != null) { // 🔹 Güncellenen bir film mi?
+        if (film.getId() != null) { // guncellenen film mi
             Film existingFilm = filmService.findById(film.getId())
                     .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
 
             if (!imageFile.isEmpty()) {
-                film.setImage(imageFile.getBytes()); // ✅ Yeni resim varsa güncelle
+                film.setImage(imageFile.getBytes()); // yeni resim
             } else {
-                film.setImage(existingFilm.getImage()); // ✅ Eski resmi koru!
+                film.setImage(existingFilm.getImage()); // eski resim
             }
         }
-        else { // 📌 Yeni bir film ekleniyorsa, resim kontrolünü ekle!
+        else { // yeni bir film ekleniyorsa, resim kontrolünü ekle
             if (!imageFile.isEmpty()) {
-                film.setImage(imageFile.getBytes()); // ✅ Yeni resim ekleniyorsa kaydet!
+                film.setImage(imageFile.getBytes()); // yeni resim eklendiyse kaydet
             } else {
-                throw new IllegalArgumentException("Film eklerken resim zorunludur!"); // 📌 Uyarı ekleyebilirsin
+                throw new IllegalArgumentException("Film eklerken resim zorunludur!");
             }
         }
 
         filmService.save(film);
-        return "redirect:/films?updateSuccess"; // 🔹 Film başarıyla kaydedildiğinde yönlendir
+        return "redirect:/films?updateSuccess"; // film başarıyla kaydedildiyse yonlendir
     }
 
     @GetMapping("/admin/films/edit/{id}")
     public String showEditFilmForm(@PathVariable Long id, Model model) {
         Film film = filmService.findById(id).orElseThrow(() -> new RuntimeException("Film bulunamadı"));
-        model.addAttribute("film", film); // Mevcut bilgileri modele ekle
-        return "add_film"; // Güncellenmiş sayfa ile aç
+        model.addAttribute("film", film);
+        return "add_film";
     }
 
     @PostMapping("/admin/films/delete/{id}")
@@ -221,9 +212,9 @@ public class AppController {
                     .orElseThrow(() -> new RuntimeException("Film bulunamadı"));
 
             filmService.deleteById(id);
-            return "redirect:/films?deleteSuccess"; // ✅ Silme başarılı olursa yönlendirme yap
+            return "redirect:/films?deleteSuccess"; // silme başariliysa yönlendirme
         } catch (RuntimeException e) {
-            return "redirect:/films?error=FilmSilinemedi"; // ❌ Silme hatası varsa hata mesajı ile yönlendir
+            return "redirect:/films?error=FilmSilinemedi";
         }
     }
 }

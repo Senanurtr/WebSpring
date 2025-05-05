@@ -21,7 +21,7 @@ public class UserService {
         return userRepository.findByUsername(username).isPresent();
     }
     public User save(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword())); // Şifreleme işlemi
+        user.setPassword(passwordEncoder.encode(user.getPassword())); // sifreleme
         return userRepository.save(user);
     }
 

@@ -46,6 +46,6 @@ public class FilmService {
     }
 
     public void deleteById(Long id) {
-        filmRepository.deleteById(id); // 📌 Direkt ID ile silme işlemi
+        filmRepository.deleteById(id); // id ile sildik
     }
 }
