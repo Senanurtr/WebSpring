@@ -13,7 +13,7 @@
 
 <h2>Kayıt Ol</h2>
 
-<!-- 🔥 HATA MESAJLARI -->
+<!-- HATA MESAJLARI -->
 <div th:if="${error}" class="alert alert-danger">
   <span th:text="${error}"></span>
 </div>
@@ -21,7 +21,7 @@
   ❌ Şifreler uyuşmuyor! Lütfen tekrar deneyin.
 </div>
 
-<!-- ✅ FORM BAŞLANGICI -->
+<!-- FORM BAŞLANGICI -->
 <form th:action="@{/register}" method="post" class="mt-4">
   <div class="mb-3">
     <label for="username" class="form-label">Kullanıcı Adı:</label>

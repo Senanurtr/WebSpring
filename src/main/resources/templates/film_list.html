@@ -24,14 +24,14 @@
     <div class="col-md-2">
         <h5>Türler</h5>
         <div class="list-group">
-            <!-- ✅ Tüm Filmler Linki -->
+            <!-- Tüm Filmler Linki -->
             <a th:href="@{/films}"
                class="list-group-item list-group-item-action"
                th:classappend="${selectedGenre == null or selectedGenre == ''} ? 'active' : ''">
                 Tüm Filmler
             </a>
 
-            <!-- ✅ Türlere Göre Filtreleme -->
+            <!-- Türlere Göre Filtreleme -->
             <a th:each="genre : ${genres}"
                th:href="@{/films(genre=${genre})}"
                class="list-group-item list-group-item-action"

@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center mb-3">
             <a th:href="@{/films}" class="btn btn-outline-primary">Anasayfa</a>
 
-            <!-- ✅ Arama + Sıralama Formu -->
+            <!-- Arama + Sıralama Formu -->
             <form th:action="@{/films}" method="get" class="d-flex gap-2 w-50">
                 <input type="text" name="query" class="form-control form-control-sm" placeholder="Film ara...">
 
@@ -36,7 +36,7 @@
                 Film Ekle
             </a>
 
-                <!-- ✅ Güvenli çıkış: POST form -->
+                <!-- Güvenli çıkış: POST form -->
                 <form th:action="@{/logout}" method="post" class="d-inline">
                     <button type="submit" class="btn btn-outline-danger btn-sm">Çıkış Yap</button>
                 </form>
